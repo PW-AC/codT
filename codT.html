@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call of Duty – Spieler-Treffpunkt</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid #e94560;
+        }
+
+        header h1 {
+            color: #fff;
+            font-size: 1.8rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .create-session {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .create-session h2 {
+            color: #16213e;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+
+        .btn {
+            background: #e94560;
+            color: white;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #d63651;
+        }
+
+        .sessions-list {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .sessions-list h2 {
+            color: #16213e;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .session-card {
+            background: #f8f9fa;
+            border-left: 4px solid #e94560;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .session-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(233, 69, 96, 0.2);
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .session-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #16213e;
+        }
+
+        .session-mode {
+            background: #e94560;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .session-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .detail-label {
+            font-weight: 600;
+        }
+
+        .session-description {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .session-actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn-join {
+            background: #0f3460;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-join:hover {
+            background: #1a4d7a;
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-top: 2px solid #e94560;
+        }
+
+        footer p {
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.4rem;
+            }
+
+            .create-session,
+            .sessions-list {
+                padding: 1.5rem;
+            }
+
+            .session-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .session-details {
+                grid-template-columns: 1fr;
+            }
+
+            .session-actions {
+                flex-direction: column;
+            }
+
+            .btn-join {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎮 Call of Duty – Spieler-Treffpunkt</h1>
+    </header>
+
+    <main>
+        <section class="create-session">
+            <h2>Neue Session erstellen</h2>
+            <form>
+                <div class="form-group">
+                    <label for="session-name">Session-Name</label>
+                    <input type="text" id="session-name" placeholder="z.B. Abend-Squad Warzone">
+                </div>
+
+                <div class="form-group">
+                    <label for="game-mode">Spielmodus</label>
+                    <select id="game-mode">
+                        <option value="">Modus auswählen</option>
+                        <option value="warzone">Warzone</option>
+                        <option value="multiplayer">Multiplayer</option>
+                        <option value="zombies">Zombies</option>
+                        <option value="dmz">DMZ</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="players">Anzahl Spieler</label>
+                    <input type="number" id="players" min="2" max="150" placeholder="4">
+                </div>
+
+                <div class="form-group">
+                    <label for="time">Startzeit</label>
+                    <input type="time" id="time">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Beschreibung (optional)</label>
+                    <textarea id="description" rows="3" placeholder="Beschreibe deine Session..."></textarea>
+                </div>
+
+                <button type="submit" class="btn">Session erstellen</button>
+            </form>
+        </section>
+
+        <section class="sessions-list">
+            <h2>Offene Sessions</h2>
+
+            <article class="session-card">
+                <div class="session-header">
+                    <h3 class="session-title">Warzone Trios – Entspanntes Gaming</h3>
+                    <span class="session-mode">Warzone</span>
+                </div>
+                <div class="session-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Spieler:</span>
+                        <span>2/3</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Startzeit:</span>
+                        <span>20:00 Uhr</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Host:</span>
+                        <span>GamerMax99</span>
+                    </div>
+                </div>
+                <p class="session-description">
+                    Suchen noch einen Spieler für lockere Runden. Mic erwünscht, aber kein Muss. Einfach Spaß haben!
+                </p>
+                <div class="session-actions">
+                    <button class="btn-join">Session beitreten</button>
+                </div>
+            </article>
+
+            <article class="session-card">
+                <div class="session-header">
+                    <h3 class="session-title">Ranked Multiplayer Grind</h3>
+                    <span class="session-mode">Multiplayer</span>
+                </div>
+                <div class="session-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Spieler:</span>
+                        <span>4/6</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Startzeit:</span>
+                        <span>19:30 Uhr</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Host:</span>
+                        <span>ProGamer_Lisa</span>
+                    </div>
+                </div>
+                <p class="session-description">
+                    Ranked Session für erfahrene Spieler. Gute Kommunikation und Teamplay wichtig. Headset Pflicht!
+                </p>
+                <div class="session-actions">
+                    <button class="btn-join">Session beitreten</button>
+                </div>
+            </article>
+
+            <article class="session-card">
+                <div class="session-header">
+                    <h3 class="session-title">Zombies Marathon – Easter Egg Hunt</h3>
+                    <span class="session-mode">Zombies</span>
+                </div>
+                <div class="session-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Spieler:</span>
+                        <span>3/4</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Startzeit:</span>
+                        <span>21:00 Uhr</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Host:</span>
+                        <span>ZombieHunter_47</span>
+                    </div>
+                </div>
+                <p class="session-description">
+                    Komplette Easter Egg Completion geplant. Erfahrung mit der Map wäre super, aber Neulinge auch willkommen!
+                </p>
+                <div class="session-actions">
+                    <button class="btn-join">Session beitreten</button>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Call of Duty Spieler-Treffpunkt | Finde dein Team und spiele gemeinsam</p>
+    </footer>
+</body>
+</html>
