@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call of Duty – Spieler-Treffpunkt</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(90deg, #0f3460 0%, #16213e 100%);
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border-bottom: 3px solid #e94560;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: #e94560;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1rem;
+            color: #a0a0a0;
+            font-weight: 300;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .create-session {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            border: 1px solid #0f3460;
+        }
+
+        .create-session h2 {
+            color: #e94560;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .create-session h2::before {
+            content: "➕";
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: #0f3460;
+            border: 1px solid #1a4d7a;
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #e94560;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            background: #e94560;
+            color: white;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: #d63651;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
+        }
+
+        .sessions-list {
+            margin-top: 3rem;
+        }
+
+        .sessions-list h2 {
+            color: #e94560;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sessions-list h2::before {
+            content: "🎮";
+            font-size: 1.5rem;
+        }
+
+        .session-card {
+            background: #16213e;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            border: 1px solid #0f3460;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .session-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(233, 69, 96, 0.3);
+            border-color: #e94560;
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .session-title {
+            font-size: 1.3rem;
+            color: #e94560;
+            font-weight: 600;
+        }
+
+        .session-mode {
+            background: #0f3460;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #4ecdc4;
+            font-weight: 500;
+        }
+
+        .session-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .session-description {
+            color: #b0b0b0;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .session-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #0f3460;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .player-count {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #4ecdc4;
+            font-weight: 600;
+        }
+
+        .player-count::before {
+            content: "👥";
+        }
+
+        .btn-join {
+            background: #4ecdc4;
+            color: #1a1a2e;
+            padding: 0.625rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-join:hover {
+            background: #3dbcb3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4);
+        }
+
+        footer {
+            background: #0f0f1e;
+            padding: 2rem 1rem;
+            text-align: center;
+            margin-top: auto;
+            border-top: 3px solid #e94560;
+        }
+
+        footer p {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        footer .links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        footer .links a {
+            color: #4ecdc4;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        footer .links a:hover {
+            color: #e94560;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            header p {
+                font-size: 0.9rem;
+            }
+
+            .create-session,
+            .session-card {
+                padding: 1.25rem;
+            }
+
+            .session-header {
+                flex-direction: column;
+            }
+
+            .session-info {
+                grid-template-columns: 1fr;
+            }
+
+            .session-footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-join {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            main {
+                padding: 1rem 0.5rem;
+            }
+
+            .create-session h2,
+            .sessions-list h2 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Call of Duty – Spieler-Treffpunkt</h1>
+        <p>Finde Mitspieler für deine nächste Gaming-Session</p>
+    </header>
+
+    <main>
+        <section class="create-session">
+            <h2>Neue Session erstellen</h2>
+            <form>
+                <div class="form-group">
+                    <label for="session-name">Session-Name</label>
+                    <input type="text" id="session-name" placeholder="z.B. Abend-Runde Warzone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="game-mode">Spielmodus</label>
+                    <select id="game-mode" required>
+                        <option value="">Wähle einen Modus</option>
+                        <option value="warzone">Warzone</option>
+                        <option value="multiplayer">Multiplayer</option>
+                        <option value="zombies">Zombies</option>
+                        <option value="ranked">Ranked</option>
+                        <option value="custom">Custom Match</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="max-players">Max. Spieler</label>
+                    <input type="number" id="max-players" min="2" max="150" value="4" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="start-time">Startzeit</label>
+                    <input type="datetime-local" id="start-time" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Beschreibung</label>
+                    <textarea id="description" placeholder="Beschreibe deine Session, Skill-Level, Kommunikationssprache, etc."></textarea>
+                </div>
+
+                <button type="submit" class="btn">Session erstellen</button>
+            </form>
+        </section>
+
+        <section class="sessions-list">
+            <h2>Offene Gaming-Sessions</h2>
+
+            <article class="session-card">
+                <div class="session-header">
+                    <h3 class="session-title">Warzone Trios - Entspannt</h3>
+                    <span class="session-mode">Warzone</span>
+                </div>
+                
+                <div class="session-info">
+                    <div class="info-item">
+                        <span class="info-label">Host</span>
+                        <span class="info-value">GamerPro42</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Startzeit</span>
+                        <span class="info-value">Heute, 20:00</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Skill-Level</span>
+                        <span class="info-value">Casual</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Plattform</span>
+                        <span class="info-value">Cross-Platform</span>
+                    </div>
+                </div>
+
+                <p class="session-description">
+                    Suche 2 Mitspieler für entspannte Warzone Trios. Kein Stress, einfach Spaß haben. 
+                    Discord für Voice-Chat vorhanden. Alle Skill-Level willkommen!
+                </p>
+
+                <div class="session-footer">
+                    <span class="player-count">2 / 3 Spieler</span>
+                    <button class="btn-join">Session beitreten</button>
+                </div>
+            </article>
+
+            <article class="session-card">
+                <div class="session-header">
+                    <h3 class="session-title">Ranked Push - Diamond+</h3>
+                    <span class="session-mode">Ranked</span>
+                </div>
+                
+                <div class="session-info">
+                    <div class="info-item">
+                        <span class="info-label">Host</span>
+                        <span class="info-value">CompetitiveAce</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Startzeit</span>
+                        <span class="info-value">Heute, 19:30</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Skill-Level</span>
+                        <span class="info-value">Diamond+</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Plattform</span>
+                        <span class="info-value">PC</span>
+                    </div>
+                </div>
+
+                <p class="session-description">
+                    Suche erfahrene Spieler für Ranked Push. Mindestens Diamond-Rang erforderlich. 
+                    Gute Kommunikation und Teamplay sind Pflicht. Ziel: Master-Rang erreichen.
+                </p>
+
+                <div class="session-footer">
+                    <span class="player-count">3 / 4 Spieler</span>
+                    <button class="btn-join">Session beitreten</button>
+                </div>
+            </article>
+
+            <article class="session-card">
+                <div class="session-header">
+                    <h3 class="session-title">Zombies Marathon - Easter Eggs</h3>
+                    <span class="session-mode">Zombies</span>
+                </div>
+                
+                <div class="session-info">
+                    <div class="info-item">
+                        <span class="info-label">Host</span>
+                        <span class="info-value">ZombieHunter99</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Startzeit</span>
+                        <span class="info-value">Morgen, 15:00</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Skill-Level</span>
+                        <span class="info-value">Fortgeschritten</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Plattform</span>
+                        <span class="info-value">PlayStation</span>
+                    </div>
+                </div>
+
+                <p class="session-description">
+                    Wir machen alle Easter Eggs auf den klassischen Zombies-Maps. 
+                    Erfahrung mit Easter Eggs wäre super, aber nicht zwingend notwendig. 
+                    Planen mehrere Stunden zu spielen.
+                </p>
+
+                <div class="session-footer">
+                    <span class="player-count">1 / 4 Spieler</span>
+                    <button class="btn-join">Session beitreten</button>
+                </div>
+            </article>
+
+            <article class="session-card">
+                <div class="session-header">
+                    <h3 class="session-title">Multiplayer Domination - Chill</h3>
+                    <span class="session-mode">Multiplayer</span>
+                </div>
+                
+                <div class="session-info">
+                    <div class="info-item">
+                        <span class="info-label">Host</span>
+                        <span class="info-value">ChillGamer007</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Startzeit</span>
+                        <span class="info-value">Heute, 21:00</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Skill-Level</span>
+                        <span class="info-value">Alle Level</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Plattform</span>
+                        <span class="info-value">Xbox</span>
+                    </div>
+                </div>
+
+                <p class="session-description">
+                    Entspanntes Multiplayer-Gaming ohne Druck. Hauptsache Spaß haben und zusammen spielen. 
+                    Anfänger und Fortgeschrittene gleichermaßen willkommen!
+                </p>
+
+                <div class="session-footer">
+                    <span class="player-count">4 / 6 Spieler</span>
+                    <button class="btn-join">Session beitreten</button>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Call of Duty Spieler-Treffpunkt</p>
+        <p>Eine Community-Plattform für CoD-Spieler</p>
+        <div class="links">
+            <a href="#">Über uns</a>
+            <a href="#">Regeln</a>
+            <a href="#">Datenschutz</a>
+            <a href="#">Kontakt</a>
+        </div>
+    </footer>
+</body>
+</html>
