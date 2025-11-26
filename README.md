@@ -6,6 +6,26 @@ Eine moderne, vollständig funktionale Gaming-Plattform für Call of Duty Spiele
 ![Status](https://img.shields.io/badge/Status-Active-success)
 ![Version](https://img.shields.io/badge/Version-2.0-orange)
 
+---
+
+## 🚀 Schnellstart für GitHub Codespaces
+
+**Terminal im Codespace öffnen und ausführen:**
+
+```bash
+yarn start
+```
+
+**Oder alternativ:**
+
+```bash
+npm start
+```
+
+Der Server startet automatisch und ist über den Port-Forwarding-Link im Codespace erreichbar (wird im Terminal angezeigt).
+
+---
+
 ## ✨ Highlights
 
 - 🎨 **Moderne UI**: Minimalistisches Dark/Light Theme mit Gaming-Ästhetik
