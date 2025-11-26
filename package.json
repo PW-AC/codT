@@ -1,0 +1,19 @@
+{
+  "name": "cod-gaming-platform",
+  "version": "1.0.0",
+  "description": "Eine einfache Gaming-Plattform für Call of Duty Spieler",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve .",
+    "serve": "npx serve ."
+  },
+  "keywords": [
+    "gaming",
+    "call-of-duty",
+    "matchmaking",
+    "frontend"
+  ],
+  "author": "",
+  "license": "MIT"
+}

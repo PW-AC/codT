@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call of Duty – Spieler-Treffpunkt</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #e94560;
+            --secondary-color: #4ecdc4;
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-card: #16213e;
+            --bg-input: #0f3460;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --border-color: #0f3460;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(90deg, #0f3460 0%, var(--bg-secondary) 100%);
+            padding: 1.5rem 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            border-bottom: 3px solid var(--primary-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-title {
+            flex: 1;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.25rem;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .stats-badge {
+            background: var(--bg-input);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--secondary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stats-badge::before {
+            content: "🎮";
+        }
+
+        .theme-toggle {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--primary-color);
+            background: rgba(233, 69, 96, 0.1);
+        }
+
+        /* Light Mode */
+        body.light-mode {
+            --primary-color: #d63651;
+            --secondary-color: #3dbcb3;
+            --bg-primary: #f5f5f5;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-input: #e8e8e8;
+            --text-primary: #1a1a2e;
+            --text-secondary: #666666;
+            --border-color: #e0e0e0;
+        }
+
+        body.light-mode {
+            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+        }
+
+        body.light-mode header {
+            background: linear-gradient(90deg, #ffffff 0%, #f9f9f9 100%);
+        }
+
+        body.light-mode .session-card,
+        body.light-mode .create-session,
+        body.light-mode .toast {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .session-mode {
+            background: #f0f0f0;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .controls-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.1);
+        }
+
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.75rem 1.25rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary-color);
+            background: rgba(233, 69, 96, 0.1);
+        }
+
+        .filter-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .sort-select {
+            padding: 0.75rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .sort-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn-toggle-form {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-toggle-form:hover {
+            background: #d63651;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
+        }
+
+        .create-session {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        .create-session.show {
+            max-height: 1000px;
+            opacity: 1;
+            margin-bottom: 2rem;
+        }
+
+        .create-session h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .create-session h2::before {
+            content: "➕";
+            font-size: 1.2rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-input);
+            border: 1px solid #1a4d7a;
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+            grid-column: 1 / -1;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: #d63651;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: transparent;
+            border-color: var(--primary-color);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .sessions-list {
+            margin-top: 2rem;
+        }
+
+        .sessions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .sessions-header h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sessions-header h2::before {
+            content: "🎮";
+            font-size: 1.5rem;
+        }
+
+        .session-count {
+            background: var(--bg-card);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .sessions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .session-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+            animation: fadeIn 0.5s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .session-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .session-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .session-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(233, 69, 96, 0.3);
+            border-color: var(--primary-color);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+
+        .session-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .session-mode {
+            background: var(--bg-input);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .session-mode.warzone { color: #ff9800; }
+        .session-mode.ranked { color: #e91e63; }
+        .session-mode.zombies { color: #4caf50; }
+        .session-mode.multiplayer { color: #2196f3; }
+        .session-mode.custom { color: #9c27b0; }
+
+        .session-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-value {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .session-description {
+            color: #b0b0b0;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .session-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            gap: 1rem;
+        }
+
+        .player-count {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .player-count::before {
+            content: "👥";
+        }
+
+        .player-count.full {
+            color: var(--danger-color);
+        }
+
+        .btn-join {
+            background: var(--secondary-color);
+            color: #1a1a2e;
+            padding: 0.625rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-join:hover {
+            background: #3dbcb3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.4);
+        }
+
+        .btn-join:disabled {
+            background: #555;
+            color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-delete {
+            background: var(--danger-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            opacity: 0;
+        }
+
+        .session-card:hover .btn-delete {
+            opacity: 1;
+        }
+
+        .btn-delete:hover {
+            background: #d32f2f;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 5rem;
+            right: 1rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            min-width: 300px;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .toast.success {
+            border-left-color: var(--success-color);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger-color);
+        }
+
+        .toast.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+        }
+
+        .toast-message {
+            flex: 1;
+            font-size: 0.95rem;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            animation: scaleIn 0.3s ease;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: var(--primary-color);
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        footer {
+            background: #0f0f1e;
+            padding: 2rem 1rem;
+            text-align: center;
+            margin-top: auto;
+            border-top: 3px solid var(--primary-color);
+        }
+
+        footer p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        footer .links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        footer .links a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        footer .links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .filter-group {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .sessions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .toast-container {
+                left: 1rem;
+                right: 1rem;
+            }
+
+            .toast {
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.3rem;
+            }
+
+            main {
+                padding: 1rem 0.5rem;
+            }
+
+            .session-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-title">
+                <h1>Call of Duty – Spieler-Treffpunkt</h1>
+                <p>Finde Mitspieler für deine nächste Gaming-Session</p>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle" title="Theme wechseln">
+                    <span id="theme-icon">🌙</span>
+                </button>
+                <div class="stats-badge">
+                    <span id="active-sessions-count">0</span> Sessions
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="controls-bar">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Sessions durchsuchen...">
+            </div>
+            
+            <div class="filter-group">
+                <button class="filter-btn active" data-filter="all">Alle</button>
+                <button class="filter-btn" data-filter="warzone">Warzone</button>
+                <button class="filter-btn" data-filter="multiplayer">Multiplayer</button>
+                <button class="filter-btn" data-filter="zombies">Zombies</button>
+                <button class="filter-btn" data-filter="ranked">Ranked</button>
+            </div>
+
+            <select class="sort-select" id="sort-select">
+                <option value="newest">Neueste zuerst</option>
+                <option value="oldest">Älteste zuerst</option>
+                <option value="players-asc">Wenigste Spieler</option>
+                <option value="players-desc">Meiste Spieler</option>
+            </select>
+
+            <button class="btn-toggle-form" id="toggle-form-btn">
+                <span>➕</span> Neue Session
+            </button>
+
+            <button class="filter-btn" onclick="showStats()" title="Statistiken anzeigen">
+                📊 Stats
+            </button>
+
+            <button class="filter-btn" onclick="exportSessions()" title="Sessions exportieren">
+                💾 Export
+            </button>
+
+            <label class="filter-btn" style="cursor: pointer; margin: 0;">
+                📥 Import
+                <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importSessions(event)">
+            </label>
+        </div>
+
+        <section class="create-session" id="create-session-form">
+            <h2>Neue Session erstellen</h2>
+            <form id="session-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="session-name">Session-Name *</label>
+                        <input type="text" id="session-name" placeholder="z.B. Abend-Runde Warzone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="game-mode">Spielmodus *</label>
+                        <select id="game-mode" required>
+                            <option value="">Wähle einen Modus</option>
+                            <option value="warzone">Warzone</option>
+                            <option value="multiplayer">Multiplayer</option>
+                            <option value="zombies">Zombies</option>
+                            <option value="ranked">Ranked</option>
+                            <option value="custom">Custom Match</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="host-name">Dein Name *</label>
+                        <input type="text" id="host-name" placeholder="z.B. GamerPro42" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="max-players">Max. Spieler *</label>
+                        <input type="number" id="max-players" min="2" max="150" value="4" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="skill-level">Skill-Level *</label>
+                        <select id="skill-level" required>
+                            <option value="">Wähle Skill-Level</option>
+                            <option value="Anfänger">Anfänger</option>
+                            <option value="Casual">Casual</option>
+                            <option value="Fortgeschritten">Fortgeschritten</option>
+                            <option value="Profi">Profi</option>
+                            <option value="Alle Level">Alle Level</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="platform">Plattform *</label>
+                        <select id="platform" required>
+                            <option value="">Wähle Plattform</option>
+                            <option value="PC">PC</option>
+                            <option value="PlayStation">PlayStation</option>
+                            <option value="Xbox">Xbox</option>
+                            <option value="Cross-Platform">Cross-Platform</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="start-time">Startzeit *</label>
+                        <input type="datetime-local" id="start-time" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label for="description">Beschreibung</label>
+                        <textarea id="description" placeholder="Beschreibe deine Session, Kommunikationssprache, besondere Anforderungen, etc."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-btn">Abbrechen</button>
+                    <button type="submit" class="btn">Session erstellen</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="sessions-list">
+            <div class="sessions-header">
+                <h2>Offene Gaming-Sessions</h2>
+                <span class="session-count" id="visible-sessions-count">0 Sessions gefunden</span>
+            </div>
+
+            <div class="sessions-grid" id="sessions-container">
+                <!-- Sessions werden hier dynamisch eingefügt -->
+            </div>
+
+            <div class="empty-state" id="empty-state" style="display: none;">
+                <div class="empty-state-icon">🎮</div>
+                <h3>Keine Sessions gefunden</h3>
+                <p>Erstelle die erste Session oder passe deine Suchkriterien an</p>
+                <button class="btn" onclick="document.getElementById('toggle-form-btn').click()">Erste Session erstellen</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Call of Duty Spieler-Treffpunkt</p>
+        <p>Eine Community-Plattform für CoD-Spieler</p>
+        <div class="links">
+            <a href="#" onclick="showInfo('about')">Über uns</a>
+            <a href="#" onclick="showInfo('rules')">Regeln</a>
+            <a href="#" onclick="showInfo('privacy')">Datenschutz</a>
+            <a href="#" onclick="showInfo('contact')">Kontakt</a>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title">Session Details</h2>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Modal content -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Globale Variablen
+        let sessions = [];
+        let currentFilter = 'all';
+        let currentSort = 'newest';
+
+        // LocalStorage Funktionen
+        function saveSessions() {
+            localStorage.setItem('codSessions', JSON.stringify(sessions));
+        }
+
+        function loadSessions() {
+            const saved = localStorage.getItem('codSessions');
+            if (saved) {
+                sessions = JSON.parse(saved);
+            } else {
+                // Beispiel-Sessions beim ersten Start
+                sessions = [
+                    {
+                        id: Date.now() + 1,
+                        name: 'Warzone Trios - Entspannt',
+                        mode: 'warzone',
+                        host: 'GamerPro42',
+                        maxPlayers: 3,
+                        currentPlayers: 2,
+                        skillLevel: 'Casual',
+                        platform: 'Cross-Platform',
+                        startTime: 'Heute, 20:00',
+                        description: 'Suche 2 Mitspieler für entspannte Warzone Trios. Kein Stress, einfach Spaß haben. Discord für Voice-Chat vorhanden. Alle Skill-Level willkommen!',
+                        timestamp: Date.now()
+                    },
+                    {
+                        id: Date.now() + 2,
+                        name: 'Ranked Push - Diamond+',
+                        mode: 'ranked',
+                        host: 'CompetitiveAce',
+                        maxPlayers: 4,
+                        currentPlayers: 3,
+                        skillLevel: 'Diamond+',
+                        platform: 'PC',
+                        startTime: 'Heute, 19:30',
+                        description: 'Suche erfahrene Spieler für Ranked Push. Mindestens Diamond-Rang erforderlich. Gute Kommunikation und Teamplay sind Pflicht.',
+                        timestamp: Date.now() + 1000
+                    }
+                ];
+                saveSessions();
+            }
+        }
+
+        // Toast Notifications
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : '⚠';
+            
+            toast.innerHTML = `
+                <div class="toast-icon">${icon}</div>
+                <div class="toast-message">${message}</div>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Modal Funktionen
+        function showModal(title, content) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-body').innerHTML = content;
+            document.getElementById('modal-overlay').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('show');
+        }
+
+        function showInfo(type) {
+            const content = {
+                about: '<p>Diese Plattform verbindet Call of Duty Spieler weltweit. Erstelle Sessions, finde Mitspieler und habe Spaß!</p>',
+                rules: '<ul><li>Sei respektvoll zu anderen Spielern</li><li>Keine Beleidigungen oder Diskriminierung</li><li>Halte dich an vereinbarte Zeiten</li><li>Fairplay und Teamwork</li></ul>',
+                privacy: '<p>Wir speichern nur die Daten, die du freiwillig angibst. Alle Daten werden lokal in deinem Browser gespeichert.</p>',
+                contact: '<p>Discord: CoD-Treffpunkt#1234<br>E-Mail: info@cod-treffpunkt.de</p>'
+            };
+            
+            const titles = {
+                about: 'Über uns',
+                rules: 'Community-Regeln',
+                privacy: 'Datenschutz',
+                contact: 'Kontakt'
+            };
+            
+            showModal(titles[type], content[type]);
+        }
+
+        // Session-Karte erstellen
+        function createSessionCard(session) {
+            const card = document.createElement('article');
+            card.className = 'session-card';
+            card.dataset.mode = session.mode;
+            card.dataset.timestamp = session.timestamp;
+            
+            const isFull = session.currentPlayers >= session.maxPlayers;
+            
+            card.innerHTML = `
+                <button class="btn-delete" onclick="deleteSession(${session.id}, event)">🗑️ Löschen</button>
+                <div class="session-header">
+                    <h3 class="session-title">${session.name}</h3>
+                    <span class="session-mode ${session.mode}">${getModeLabel(session.mode)}</span>
+                </div>
+                
+                <div class="session-info">
+                    <div class="info-item">
+                        <span class="info-label">Host</span>
+                        <span class="info-value">${session.host}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Startzeit</span>
+                        <span class="info-value">${session.startTime}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Skill-Level</span>
+                        <span class="info-value">${session.skillLevel}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Plattform</span>
+                        <span class="info-value">${session.platform}</span>
+                    </div>
+                </div>
+
+                <p class="session-description">${session.description || 'Keine Beschreibung vorhanden.'}</p>
+
+                <div class="session-footer">
+                    <span class="player-count ${isFull ? 'full' : ''}">${session.currentPlayers} / ${session.maxPlayers} Spieler</span>
+                    <button class="btn-join" onclick="joinSession(${session.id}, event)" ${isFull ? 'disabled' : ''}>
+                        ${isFull ? 'Voll' : 'Beitreten'}
+                    </button>
+                </div>
+            `;
+            
+            // Click on card to show details
+            card.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('btn-join') && 
+                    !e.target.classList.contains('btn-delete')) {
+                    showSessionDetails(session);
+                }
+            });
+            
+            return card;
+        }
+
+        function getModeLabel(mode) {
+            const labels = {
+                warzone: 'Warzone',
+                multiplayer: 'Multiplayer',
+                zombies: 'Zombies',
+                ranked: 'Ranked',
+                custom: 'Custom'
+            };
+            return labels[mode] || mode;
+        }
+
+        function showSessionDetails(session) {
+            const content = `
+                <div style="margin-bottom: 1.5rem;">
+                    <h3 style="color: var(--primary-color); margin-bottom: 1rem;">${session.name}</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <strong style="color: var(--text-secondary);">Host:</strong> ${session.host}
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-secondary);">Modus:</strong> ${getModeLabel(session.mode)}
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-secondary);">Startzeit:</strong> ${session.startTime}
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-secondary);">Spieler:</strong> ${session.currentPlayers}/${session.maxPlayers}
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-secondary);">Skill-Level:</strong> ${session.skillLevel}
+                        </div>
+                        <div>
+                            <strong style="color: var(--text-secondary);">Plattform:</strong> ${session.platform}
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <strong style="color: var(--text-secondary);">Beschreibung:</strong>
+                        <p style="margin-top: 0.5rem; line-height: 1.6;">${session.description || 'Keine Beschreibung vorhanden.'}</p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button class="btn" onclick="joinSession(${session.id}); closeModal();" ${session.currentPlayers >= session.maxPlayers ? 'disabled' : ''}>
+                        ${session.currentPlayers >= session.maxPlayers ? 'Session voll' : 'Jetzt beitreten'}
+                    </button>
+                </div>
+            `;
+            showModal('Session Details', content);
+        }
+
+        // Sessions rendern
+        function renderSessions() {
+            const container = document.getElementById('sessions-container');
+            const emptyState = document.getElementById('empty-state');
+            
+            // Filter anwenden
+            let filteredSessions = sessions;
+            
+            if (currentFilter !== 'all') {
+                filteredSessions = sessions.filter(s => s.mode === currentFilter);
+            }
+            
+            // Suche anwenden
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            if (searchTerm) {
+                filteredSessions = filteredSessions.filter(s => 
+                    s.name.toLowerCase().includes(searchTerm) ||
+                    s.host.toLowerCase().includes(searchTerm) ||
+                    s.description.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Sortierung anwenden
+            filteredSessions.sort((a, b) => {
+                switch(currentSort) {
+                    case 'newest':
+                        return b.timestamp - a.timestamp;
+                    case 'oldest':
+                        return a.timestamp - b.timestamp;
+                    case 'players-asc':
+                        return a.currentPlayers - b.currentPlayers;
+                    case 'players-desc':
+                        return b.currentPlayers - a.currentPlayers;
+                    default:
+                        return 0;
+                }
+            });
+            
+            // Container leeren
+            container.innerHTML = '';
+            
+            // Sessions rendern oder Empty State zeigen
+            if (filteredSessions.length === 0) {
+                emptyState.style.display = 'block';
+                container.style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                container.style.display = 'grid';
+                filteredSessions.forEach(session => {
+                    container.appendChild(createSessionCard(session));
+                });
+            }
+            
+            // Counter aktualisieren
+            document.getElementById('active-sessions-count').textContent = sessions.length;
+            document.getElementById('visible-sessions-count').textContent = 
+                `${filteredSessions.length} Session${filteredSessions.length !== 1 ? 's' : ''} gefunden`;
+        }
+
+        // Session beitreten
+        function joinSession(id, event) {
+            if (event) event.stopPropagation();
+            
+            const session = sessions.find(s => s.id === id);
+            if (session && session.currentPlayers < session.maxPlayers) {
+                session.currentPlayers++;
+                saveSessions();
+                renderSessions();
+                showToast(`Du bist der Session "${session.name}" beigetreten! 🎮`, 'success');
+            }
+        }
+
+        // Session löschen
+        function deleteSession(id, event) {
+            if (event) event.stopPropagation();
+            
+            if (confirm('Möchtest du diese Session wirklich löschen?')) {
+                sessions = sessions.filter(s => s.id !== id);
+                saveSessions();
+                renderSessions();
+                showToast('Session erfolgreich gelöscht', 'success');
+            }
+        }
+
+        // Formular-Handler
+        document.getElementById('session-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const newSession = {
+                id: Date.now(),
+                name: document.getElementById('session-name').value,
+                mode: document.getElementById('game-mode').value,
+                host: document.getElementById('host-name').value,
+                maxPlayers: parseInt(document.getElementById('max-players').value),
+                currentPlayers: 1,
+                skillLevel: document.getElementById('skill-level').value,
+                platform: document.getElementById('platform').value,
+                startTime: formatDateTime(document.getElementById('start-time').value),
+                description: document.getElementById('description').value,
+                timestamp: Date.now()
+            };
+            
+            sessions.push(newSession);
+            saveSessions();
+            renderSessions();
+            
+            // Formular zurücksetzen und schließen
+            document.getElementById('session-form').reset();
+            document.getElementById('create-session-form').classList.remove('show');
+            
+            showToast('Session erfolgreich erstellt! 🎉', 'success');
+        });
+
+        // DateTime formatieren
+        function formatDateTime(datetime) {
+            if (!datetime) return '';
+            const date = new Date(datetime);
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const time = date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+            
+            if (date >= today && date < tomorrow) {
+                return `Heute, ${time}`;
+            } else if (date >= tomorrow && date < new Date(tomorrow.getTime() + 86400000)) {
+                return `Morgen, ${time}`;
+            } else {
+                return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + `, ${time}`;
+            }
+        }
+
+        // Toggle Formular
+        document.getElementById('toggle-form-btn').addEventListener('click', () => {
+            const form = document.getElementById('create-session-form');
+            form.classList.toggle('show');
+            
+            // Scroll zum Formular wenn geöffnet
+            if (form.classList.contains('show')) {
+                setTimeout(() => {
+                    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
+        });
+
+        document.getElementById('cancel-btn').addEventListener('click', () => {
+            document.getElementById('create-session-form').classList.remove('show');
+            document.getElementById('session-form').reset();
+        });
+
+        // Filter-Buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                renderSessions();
+            });
+        });
+
+        // Sortierung
+        document.getElementById('sort-select').addEventListener('change', (e) => {
+            currentSort = e.target.value;
+            renderSessions();
+        });
+
+        // Suche
+        document.getElementById('search-input').addEventListener('input', () => {
+            renderSessions();
+        });
+
+        // Modal schließen bei Klick außerhalb
+        document.getElementById('modal-overlay').addEventListener('click', (e) => {
+            if (e.target.id === 'modal-overlay') {
+                closeModal();
+            }
+        });
+
+        // ESC zum Schließen
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            const currentTheme = localStorage.getItem('theme') || 'dark';
+            
+            if (currentTheme === 'dark') {
+                body.classList.add('light-mode');
+                themeIcon.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.remove('light-mode');
+                themeIcon.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (savedTheme === 'light') {
+                body.classList.add('light-mode');
+                themeIcon.textContent = '☀️';
+            }
+        }
+
+        document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+
+        // Initial laden
+        loadTheme();
+        loadSessions();
+        renderSessions();
+
+        // Begrüßungs-Toast
+        setTimeout(() => {
+            showToast('Willkommen auf der Call of Duty Gaming-Plattform! 🎮', 'success');
+        }, 500);
+
+        // Statistiken anzeigen
+        function showStats() {
+            const totalSessions = sessions.length;
+            const totalPlayers = sessions.reduce((sum, s) => sum + s.currentPlayers, 0);
+            const modeStats = {};
+            
+            sessions.forEach(s => {
+                modeStats[s.mode] = (modeStats[s.mode] || 0) + 1;
+            });
+            
+            const modeStatsHtml = Object.entries(modeStats)
+                .map(([mode, count]) => `<li><strong>${getModeLabel(mode)}:</strong> ${count} Sessions</li>`)
+                .join('');
+            
+            const avgPlayers = totalSessions > 0 ? (totalPlayers / totalSessions).toFixed(1) : 0;
+            const fullSessions = sessions.filter(s => s.currentPlayers >= s.maxPlayers).length;
+            
+            const content = `
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; color: var(--primary-color); font-weight: bold;">${totalSessions}</div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Gesamt Sessions</div>
+                    </div>
+                    <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; color: var(--secondary-color); font-weight: bold;">${totalPlayers}</div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Gesamt Spieler</div>
+                    </div>
+                    <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; color: var(--success-color); font-weight: bold;">${avgPlayers}</div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Ø Spieler/Session</div>
+                    </div>
+                    <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2rem; color: var(--warning-color); font-weight: bold;">${fullSessions}</div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">Volle Sessions</div>
+                    </div>
+                </div>
+                <div style="background: var(--bg-input); padding: 1rem; border-radius: 8px;">
+                    <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">Sessions nach Modus:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        ${modeStatsHtml || '<li style="color: var(--text-secondary);">Keine Daten verfügbar</li>'}
+                    </ul>
+                </div>
+            `;
+            
+            showModal('📊 Plattform-Statistiken', content);
+        }
+
+        // Export Sessions
+        function exportSessions() {
+            const dataStr = JSON.stringify(sessions, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `cod-sessions-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showToast('Sessions erfolgreich exportiert! 💾', 'success');
+        }
+
+        // Import Sessions
+        function importSessions(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedSessions = JSON.parse(e.target.result);
+                    if (!Array.isArray(importedSessions)) {
+                        throw new Error('Invalid format');
+                    }
+                    
+                    // Merge or replace
+                    if (confirm('Möchtest du die importierten Sessions mit den bestehenden zusammenführen? (Abbrechen = Ersetzen)')) {
+                        sessions = [...sessions, ...importedSessions];
+                    } else {
+                        sessions = importedSessions;
+                    }
+                    
+                    saveSessions();
+                    renderSessions();
+                    showToast(`${importedSessions.length} Sessions erfolgreich importiert! 📥`, 'success');
+                } catch (error) {
+                    showToast('Fehler beim Importieren der Sessions! ❌', 'error');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; // Reset input
+        }
+
+        // Auto-Cleanup alte Sessions
+        function cleanupOldSessions() {
+            const now = new Date();
+            const oneDayAgo = now.getTime() - (24 * 60 * 60 * 1000);
+            
+            const oldCount = sessions.length;
+            sessions = sessions.filter(s => s.timestamp > oneDayAgo);
+            
+            if (oldCount !== sessions.length) {
+                saveSessions();
+                renderSessions();
+                showToast(`${oldCount - sessions.length} alte Session(s) automatisch entfernt`, 'warning');
+            }
+        }
+
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + K für Suche fokussieren
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('search-input').focus();
+            }
+            
+            // Ctrl/Cmd + N für neue Session
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                document.getElementById('toggle-form-btn').click();
+            }
+            
+            // Ctrl/Cmd + S für Statistiken
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                showStats();
+            }
+        });
+
+        // Cleanup alle 30 Minuten
+        setInterval(cleanupOldSessions, 30 * 60 * 1000);
+    </script>
+</body>
+</html>
